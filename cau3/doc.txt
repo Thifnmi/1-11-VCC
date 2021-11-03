@@ -1,0 +1,51 @@
+# dùng type hint là để những người đọc code của mình có thể 
+# hiểu được kiểu dữ liệu mà nó mong muốn
+# dùng type hint tiết kiệm được thời gian
+number: int = 1
+string: str = "string"
+
+# function là 1 khối code thực hiện 1 chức năng cụ thể và nó chỉ chạy khi 
+# function đó được gọi, function có thể truyền được dữ liệu vào, 
+# kết quả của hàm có thể là trả về dữ liệu
+# dùng function để tránh bị lặp lại code
+def function_name():
+    pass
+
+# trong 1 function nếu chưa xác định được số đối số truyền vào
+# ta có thể thêm dấu * trước parameter trong function
+# khi đó các đối số truyền vào sẽ được lưu dưới dạng tuple
+
+# trong 1 function nếu chưa xác định được có bao nhiêu đối số từ khóa truyền 
+# vào ta có thể thêm dấu ** trước parameter trong function
+# khi đó các đối số truyền vào sẽ được lưu dưới dạng dictionary
+
+# lambda là 1 function ẩn danh (không có tên)
+# 1 lambda function có thể có rất nhiều đối số nhưng nó chỉ có thể thực hiện 
+# duy nhất 1 biểu thức
+
+results = lambda a, b, c : (a + b) * c
+
+# Block scope variable là biến có sẵn trong vùng(biến cục bộ) 
+# chỉ dùng được trong vùng đó
+
+def my_function():
+    name = "thin"
+    print(name)
+
+
+# inner function là hàm lồng
+
+
+# decorator là một hàm nhận tham số đầu vào là một hàm khác và mở rộng tính năng cho hàm đó mà không thay đổi nội dung của hàm đó
+
+def print_firstname(fname):
+    return fname
+
+def print_lastname(lname):
+    return lname
+
+def decorator_function(func,x):
+    result = func(x)
+    return result
+
+print(decorator_function(print_firstname,"thin"))
