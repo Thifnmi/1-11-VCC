@@ -25,33 +25,46 @@ class Bankaccount:
     def __init__(self, balance: int):
         self.balance = balance
 
-    def deposit(self):
-        pass
+    def deposit(self, dp: int):
+        self.dp = dp
+        print(f"new balance affter deposit: {self.balance + self.dp}")
 
-    def withdraw(self):
-        pass
+    def withdraw(self, wd: int):
+        self.wd = wd
+        print("new balance affter withdraw: {}".format(
+            int(self.balance - (self.wd + (self.wd / 100 * 5)))))
 
 
 class VPBank(Bankaccount):
     def deposit(self, dp: int):
-        self.dp = dp
-        print(f"new balance affter deposit: {self.balance + self.dp}")
+        return super().deposit(dp)
 
-    def withdraw(self, wd):
-        self.wd = wd
-        print("new balance affter withdraw: {}".format(
-            int(self.balance - (self.wd + (self.wd / 100 * 5)))))
+    def withdraw(self, wd: int):
+        return super().withdraw(wd)
+    # def deposit(self, dp: int):
+    #     self.dp = dp
+    #     print(f"new balance affter deposit: {self.balance + self.dp}")
+
+    # def withdraw(self, wd):
+    #     self.wd = wd
+    #     print("new balance affter withdraw: {}".format(
+    #         int(self.balance - (self.wd + (self.wd / 100 * 5)))))
 
 
 class TechcomBank(Bankaccount):
     def deposit(self, dp: int):
-        self.dp = dp
-        print(f"new balance affter deposit: {self.balance + self.dp}")
+        return super().deposit(dp)
 
-    def withdraw(self, wd):
-        self.wd = wd
-        print("new balance affter withdraw: {}".format(
-            int(self.balance - (self.wd + (self.wd / 100 * 5)))))
+    def withdraw(self, wd: int):
+        return super().withdraw(wd)
+    # def deposit(self, dp: int):
+    #     self.dp = dp
+    #     print(f"new balance affter deposit: {self.balance + self.dp}")
+
+    # def withdraw(self, wd):
+    #     self.wd = wd
+    #     print("new balance affter withdraw: {}".format(
+    #         int(self.balance - (self.wd + (self.wd / 100 * 5)))))
 
 
 list_bank_account = [VPBank(50000000), TechcomBank(90000000), TechcomBank(
