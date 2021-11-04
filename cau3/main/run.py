@@ -3,4 +3,4 @@ import sys
 sys.path.append("..")
 
 
-house(["tu van thin", "nguyen duc thien", "vu trong dat"], "tu van thin1")
+house(["tu van thin", "nguyen duc thien", "vu trong dat"], "tu van thin")

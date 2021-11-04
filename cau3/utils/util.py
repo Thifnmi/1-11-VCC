@@ -1,5 +1,5 @@
 def require(original_function):
-    def check_name(list_name, name):
+    def check_name(list_name: list, name: str):
         if name in list_name:
             print(f"ten {name} du dieu kien duoc vao nha")
         print(original_function(list_name, name))
@@ -7,7 +7,7 @@ def require(original_function):
 
 
 @require
-def house(list_name, name):
+def house(list_name: list, name: str) -> bool:
     if name in list_name:
         return True
     return False
