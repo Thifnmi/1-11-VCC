@@ -23,19 +23,20 @@ for el in text_raw:
 
 # break into lines and remove leading and trailing space on each
 lines = (line.strip() for line in text.splitlines())
+# print(lines)
 # break multi-headlines into a line each
 chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
 # drop blank lines
-
 contents = ' '.join(chunk for chunk in chunks if chunk)
-# print(contents)
+print(contents)
 delimiters = '.', '\xa0', '?', '!', '(', ')', '|', ':',
 ', ', '  ', '"', ' – ', ',…'
 regex_pattern = "|".join(map(re.escape, delimiters))
 contents = " ".join(re.split(regex_pattern, contents))
 
-file_content = open("content.txt", "w", encoding="utf-8")
-file_content.write(contents)
+# file_content = open("content.txt", "w", encoding="utf-8")
+with open('content.txt', "a", encoding="utf-8") as file_content:
+    file_content.write(contents)
 file_content.close()
 
 dict_words = {}
