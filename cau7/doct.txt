@@ -1,1 +1,52 @@
-thread 
+# thread(luồng): là 1 khối các câu lệnh độc lập trong 1 tiến trình(process) và
+# có thể được lập lịch bởi hệ điều hành nói cách khác thì thread là các hàm
+# chạy độc lập đối với chương trình chính. mỗi process có thể chứa nhiều thread
+# và thread có thể làm bất cứ điều gì mà process có thể làm
+
+# why?
+# dễ điều kiển sự giao tiếp giữa các task
+# dễ kiểm soát lỗi
+# giảm thiểu complexxity for concurrency applications
+
+# when
+# cung cấp các giải pháp về đồng bộ
+# mỗi khi có thể áp dụng đồng bộ hay ...
+
+# how?
+# python 2 Gevent, Enventlet, Greenlet
+# python 3 Curio,asyncio
+
+
+# green thread vs os thread: Về cơ bản green thread đươc tạo và lên lịch bởi
+# máy ảo và không sử dụng thư viện của hệ thống còn os thread thì được tạo và
+# lên lịch bởi kernel của hệ điều hành. Về lập lịch(schedule) thì green thread
+# không thể điều chỉnh schedule trong các thread còn os thread thì có thể điều
+# chỉnh tất cả schedule trong các thread. Về đa xử lý thì green thread chỉ có
+# thể chạy trên 1 CPU còn os thread thì có thể chạy trên các CPU khác nhau
+# threads trong python là os threads
+# green thread(ULT: user level thread) java
+
+# GIL(Global Interpreter Lock): hiểu đơn giản thì GIL là 1 cái khóa trình thông
+# dịch làm cho python chỉ có thể chạy 1 luồng duy nhất tại 1 thời điểm
+
+# thread nên được dùng trong trường hợp thực hiện các tác vụ phải tốn thời gian
+# chờ nó hoàn thành ví dụ như
+
+# Race conditition xảy ra khi có nhiều hơn 1 thread cùng truy cập tới 1 dữ liệu
+# được chia sẻ và cùng thay đổi giá trị của dữ liệu đó cùng 1 lúc, kết quả làm
+# cho giá trị của dữ liệu đó không thể dự đoán được, điều đó còn phụ thuộc vào
+# thời gian chuyền giữa các process
+
+# mutex
+
+# semaphore là một cơ chế đồng bộ(lâu đời nhất trong lịch sử khoa học máy tính)
+# cơ chế hoạt động của semaphore: một semaphore sẽ suy trì 1 biến đến(không âm)
+# được truyền vào khi khởi tạo môt semaphone object giá trị biến đếm này sẽ
+# giảm khi gọi đến hàm acquire() và sẽ tăng khi gọi hàm release(). Khi giá trị
+# của biến đếm = 0 mà vẫn gọi hàm acquire() thì nó sẽ block thread gọi và chờ
+# cho đến khi thread khác gọi hàm release() làm biến đếm tăng lên 1
+# semaphore cung cấp 2 method acquire() và release() tương tự như cơ chế Lock
+# và RLock chỉ khác ở chỗ method acquire() sẽ trả về ngay lập tức khi biến đếm
+# có giá trị lớn hơn 0 với cơ chế như trên thì semaphore thường được dùng để
+# giới hạn số lượng thread đồng thời truy cập tới tài nguyên của chúng. Ví dụ
+# như viện giới hạn số lượng kết nối tới db server
