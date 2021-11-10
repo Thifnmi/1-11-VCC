@@ -2,16 +2,14 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from threading import Thread, Lock
 import concurrent.futures
-from multiprocessing import Process
+# from multiprocessing import Process
 import time
 import csv
 import re
 
 
 browser = None
-# links is list link post
 links = []
-# urls is list link page
 urls = []
 lock = Lock()
 
@@ -24,7 +22,6 @@ def gen_url(num):
     url = "https://bizflycloud.vn/tin-tuc/tin-tuc/trang-"+str(num)+".htm"
     print(url)
     urls.append(url)
-    # return urls
 
 
 def get_total_page(options):
@@ -75,11 +72,10 @@ def get_linkkk(options):
             executable_path='chromedriver.exe', chrome_options=options)
         browser.get(url)
         browser.maximize_window()
-        if len(links) < 300:
-            link_tag = browser.find_elements_by_class_name("entry-title")
-            for link in link_tag:
-                if link.get_attribute("href") not in links:
-                    links.append(link.get_attribute("href"))
+        link_tag = browser.find_elements_by_class_name("entry-title")
+        for link in link_tag:
+            if link.get_attribute("href") not in links:
+                links.append(link.get_attribute("href"))
     print(len(links))
 
 
@@ -92,9 +88,6 @@ def write_file(file_name, data):
         write_hander.writerow(data)
     file.close()
     print(f"Done file {file_name}")
-
-
-# print(links)
 
 
 # name/title, content, created date, url
@@ -140,23 +133,12 @@ def crawler1(link):
     write_file(file_name, data)
 
 
-def crawler_default():
-    global browser, links
-    t1 = time.perf_counter()
-    for link in links:
-        print(links.index(link))
-        crawler(browser, link)
-    browser.close()
-
-    print(f"Done in {time.perf_counter() - t1} second(s)")
-
-
 def crawler_with_thread():
     global browser, links
     threads = []
     t1 = time.perf_counter()
     for link in links:
-        t = Thread(target=crawler, args=(browser, link, ))
+        t = Thread(target=crawler1, args=(link, ))
         t.start()
         threads.append(t)
     # for thread in threads:
@@ -164,29 +146,11 @@ def crawler_with_thread():
     print(f"Done crawler with thread in {time.perf_counter() - t1} second(s)")
 
 
-def crawler_with_process():
-    global browser, links
-    threads = []
-    t1 = time.perf_counter()
-    for link in links:
-        t = Process(target=crawler, args=(browser, link, ))
-        t.start()
-        threads.append(t)
-    for thread in threads:
-        thread.join()
-    print(f"Done craler with process in {time.perf_counter() - t1} second(s)")
-# setup_option_crawl()
-# print(get_total_page(options))
-
-# setup_option_crawl()
-# get_linkkk(options)
-# print(f"Done get links in {time.perf_counter() - t1 } sencond(S)")
-# crawler_with_thread()
-# crawler_with_process()
+get_linkkk(options)
+crawler_with_thread()
 
 
 def pro():
-    t1 = time.perf_counter()
     # total_page = int(get_total_page(options))+1
     with concurrent.futures.ThreadPoolExecutor() as executor:
         executor.map(gen_url, range(1, get_total_page(options)+1))
@@ -197,7 +161,7 @@ def pro():
     # for url in urls:
     #     print(url)
     # urls = [url for url in urls]
-    with concurrent.futures.ProcessPoolExecutor(8) as executor1:
+    with concurrent.futures.ProcessPoolExecutor() as executor1:
         executor1.map(get_link1, urls)
         # for url in urls:
         #     executor1.submit(get_link, url)
@@ -205,7 +169,8 @@ def pro():
     print(links)
     # print(len(urls), len(links))
 
-    with concurrent.futures.ProcessPoolExecutor(8) as executor2:
+    t1 = time.perf_counter()
+    with concurrent.futures.ProcessPoolExecutor() as executor2:
         executor2.map(crawler1, links)
         # for link in links:
         #     executor2.submit(crawler, link)
@@ -214,8 +179,6 @@ def pro():
 
 
 def thre():
-    # global urls, links
-    t1 = time.perf_counter()
     with concurrent.futures.ThreadPoolExecutor() as executor:
         executor.map(gen_url, range(1, get_total_page(options)+1))
 
@@ -226,6 +189,7 @@ def thre():
     print(links)
     print(len(urls), len(links))
 
+    t1 = time.perf_counter()
     with concurrent.futures.ThreadPoolExecutor() as executor2:
         for link in links:
             executor2.submit(crawler, link)
@@ -233,5 +197,5 @@ def thre():
     print(f"{time.perf_counter() - t1} seconds")
 
 
-pro()
+# pro()
 # thre()
