@@ -3,27 +3,32 @@ import re
 import csv
 from bs4 import BeautifulSoup
 import time
-from threading import Thread
-from multiprocessing import Process
+from multiprocessing import Process, Queue, Manager, freeze_support
 
 
+manager = Manager()
 urls = []
-url_post = []
+url_post = manager.list()
+queue_url_post = Queue()
 
 
 # kill all script and style elements
 def kill_script(soup):
+    print("call kill script")
     for script in soup(["script", "style"]):
         script.extract()
 
 
 def gen_url(num):
+    print("call gen_url")
     url = "https://bizflycloud.vn/tin-tuc/tin-tuc/trang-"+str(num)+".htm"
     # print(url)
     urls.append(url)
+    # return urls
 
 
 def get_total_page():
+    print("call get_total_page")
     url = "https://bizflycloud.vn/tin-tuc/tin-tuc.htm"
     html = urlopen(url).read()
     soup = BeautifulSoup(html, features="html.parser")
@@ -32,20 +37,24 @@ def get_total_page():
     for num in range(1, int(total_page)+1):
         gen_url(num)
     # print(urls)
+    # return urls
 
 
 def get_link_post(url_page):
-    print(url_page)
+    # global url_post
+    print("call get_link_post")
+    # print(url_page, len(url_post))
     html = urlopen(url_page).read()
     soup = BeautifulSoup(html, features="html.parser")
     kill_script(soup)
     post_tag = soup.find_all(
         'a', attrs={'class': 'entry-title td-module-title'})
     for post in post_tag:
+        # queue_url_post.put(f"https://bizflycloud.vn{post['href']}")
         if(f"https://bizflycloud.vn{post['href']}" not in url_post):
             print(f"https://bizflycloud.vn{post['href']}")
             url_post.append(f"https://bizflycloud.vn{post['href']}")
-    print(f"{len(post_tag)}, {len(url_post)}")
+    print(f"{len(post_tag)}, {len(url_post)}, {url_post}")
 
 
 def write_file(file_name, data):
@@ -60,14 +69,15 @@ def write_file(file_name, data):
 
 
 def crawler(url):
+    print("call crawler")
     print(url)
     html = urlopen(url).read()
     soup = BeautifulSoup(html, features="html.parser")
     kill_script(soup)
     title = soup.title.string
     file_name = re.sub('\W+', '', title)
-    file_name = "results\\" + file_name + ".csv"
-    # file_name = "result\\" + file_name + ".csv"
+    # file_name = "results\\" + file_name + ".csv"
+    file_name = "result\\" + file_name + ".csv"
     author = soup.find('div', attrs={'class': 'author'}).text
     created_date = soup.find('div', attrs={'class': 'divided read-time'}).text
     content_tag = soup.find(
@@ -80,73 +90,49 @@ def crawler(url):
     write_file(file_name, data)
 
 
-def get_link_post_with_thread():
-    get_total_page()
-    threads = []
-    for url in urls:
-        t = Thread(target=get_link_post, args=(url, ))
-        t.start()
-        threads.append(t)
-
-    for thread in threads:
-        thread.join()
-
-
-def crawler_with_thread(url_post):
-    threads = []
-    t1 = time.perf_counter()
-    for url in url_post:
-        t = Thread(target=crawler, args=(url, ))
-        t.start()
-        threads.append(t)
-    for thread in threads:
-        thread.join()
-
-    print(f"Done in {time.perf_counter() - t1} seconds")
-
-
-def crawler_multi_thread(url_post):
-    t1 = time.perf_counter()
-    get_link_post_with_thread()
-    crawler_with_thread(url_post)
-    print(f"Done in {time.perf_counter() - t1} seconds")
-
-
 def get_link_post_with_process():
+    # q = Queue
     get_total_page()
-    multi_process = []
-    for url in urls:
-        p = Process(target=get_link_post, args=(url, ))
+    print("call get_link_post_with_process")
+    processes = []
+    for url in urls[:5]:
+        # freeze_support()
+        p = Process(target=get_link_post, args=[url])
         p.start()
-        multi_process.append(p)
-    for process in multi_process:
+        processes.append(p)
+    for process in processes:
         process.join()
+    # return url_post
 
 
 def crawler_with_process(url_post):
-    multi_process = []
+    print("call crawler_with_process")
+    processes = []
     t1 = time.perf_counter()
+    print(f"aaaaaa {t1}")
     for url in url_post:
-        p = Process(target=crawler, args=(url, ))
+        # freeze_support()
+        print(url)
+        p = Process(target=crawler, args=[url])
         p.start()
-        multi_process.append(p)
-    for process in multi_process:
+        processes.append(p)
+    for process in processes:
         process.join()
 
     print(f"Done in {time.perf_counter() - t1} seconds")
 
 
 def crawler_multi_process(url_post):
+    print("call crawler_multi_process")
     t1 = time.perf_counter()
     get_link_post_with_process()
-    # crawler_with_process(url_post)
+    crawler_with_process(url_post)
     print(f"Done in {time.perf_counter() - t1} seconds")
 
 
 if __name__ == "__main__":
-    print("Start crawler with multi thread")
-    crawler_multi_thread(url_post)
+    print("Start crawler with multi process")
+    freeze_support()
+    crawler_multi_process(url_post)
+    print(url_post)
     print("Done crawler with multi thread")
-    # print("Start crawler with multi process")
-    # crawler_multi_process(url_post)
-    # print("Done crawler with multi thread")
