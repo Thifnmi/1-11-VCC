@@ -65,8 +65,7 @@ def crawler(url):
     kill_script(soup)
     title = soup.title.string
     file_name = re.sub('\W+', '', title)
-    # file_name = "results\\" + file_name + ".csv"
-    file_name = "result_Process/" + file_name + ".csv"
+    file_name = "result_Process\\" + file_name + ".csv"
     author = soup.find('div', attrs={'class': 'author'}).text
     created_date = soup.find('div', attrs={'class': 'divided read-time'}).text
     content_tag = soup.find(
